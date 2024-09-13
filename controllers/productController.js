@@ -24,8 +24,6 @@ export const getProductById = async (req, res) => {
                 path: 'author',
             },
         });
-        console.log(product);
-        
         res.send(product);
     } catch (error) {
         res.status(500).json({ error: 'Error fetching product' });

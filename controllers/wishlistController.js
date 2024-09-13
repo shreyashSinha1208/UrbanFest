@@ -4,7 +4,7 @@ import User from '../models/user.js';
 
 export const addToWishlist = async (req, res) => {
     try {
-        const userId = req.session.user.id;
+        const userId = req.user.id;
         const wishlistItem = new WishList(req.body);
         await wishlistItem.save();
 
@@ -20,7 +20,7 @@ export const addToWishlist = async (req, res) => {
 
 export const removeFromWishlist = async (req, res) => {
     try {
-        const userId = req.session.user.id;
+        const userId = req.user.id;
         await WishList.findByIdAndDelete(req.params.id);
         await User.findByIdAndUpdate(userId, {
             $pull: { wishListItems: req.params.id }
@@ -35,7 +35,7 @@ export const removeFromWishlist = async (req, res) => {
 
 export const getWishlist = async (req, res) => {
     try {
-        const userId = req.session.user.id;
+        const userId = req.user.id;
         const user = await User.findById(userId).populate('wishListItems');
         res.send(user.wishListItems);
     } catch (error) {

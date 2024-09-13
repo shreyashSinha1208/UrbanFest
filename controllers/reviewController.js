@@ -4,7 +4,7 @@ import Product from '../models/product.js';
 export const createReview = async (req, res) => {
           try {
                     const { rating, reviewText, productId } = req.body;
-                    const userId = req.session.user.id;
+                    const userId = req.user.id;
 
                     const newReview = new Review({
                               author: userId,
@@ -15,7 +15,6 @@ export const createReview = async (req, res) => {
                     const savedReview = await newReview.save();
                     const product = await Product.findById(productId);
                     const author = await Review.find().populate('author');
-                    console.log(author);
 
                     if (product) {
                               product.review.push(savedReview._id);
@@ -47,8 +46,9 @@ export const createReview = async (req, res) => {
 export const deleteReview = async (req, res) => {
           try {
                     const { reviewId, productId } = req.body;
-                    const userId = req.session.user.id;
-
+                    const userId = req.user.id;
+                    console.log(reviewId, productId, userId);
+                    
                     const review = await Review.findById(reviewId);
                     if (!review) {
                               return res.status(404).json({

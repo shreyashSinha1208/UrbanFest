@@ -22,7 +22,7 @@ export const createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Invalid amount provided' });
     }
     const receiptId = `receipt_${Date.now()}`;
-    const userId = req.session.user.id;
+    const userId = req.user.id;
     const user = await User.findById(userId).populate('cartItems');
 
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -85,11 +85,10 @@ export const updateOrderStatus = async (req, res) => {
 
 export const getOrders = async (req, res) => {
   try {
-    const userId = req.session.user.id;
+    const userId = req.user.id;
 
     // Fetch all orders for the user
     const orders = await Order.find({ user: userId }).exec();
-    console.log(orders);
     
     const allCartItemIds = orders.flatMap(order => order.cartItems);
     const objectIds = allCartItemIds.map(id => new mongoose.Types.ObjectId(id));
@@ -107,9 +106,7 @@ export const getOrders = async (req, res) => {
         ...order.toObject(),
         cartItems: populatedCartItems
       };
-    });
-    console.log(ordersWithDetails);
-    
+    });    
     res.json({ success: true, orders: ordersWithDetails });
   } catch (error) {
     console.error('Error fetching orders:', error);

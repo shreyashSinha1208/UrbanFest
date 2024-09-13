@@ -1,15 +1,15 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
+import { generateToken } from './generateToken.js';
+import jwt from 'jsonwebtoken';
 
 const findOrCreateUser = async ({ sub, name, email, picture, password }) => {
     let user;
     let isNewUser = false;
-
-    // Check for Google sign-in with `sub`
     if (sub) {
         user = await User.findOne({ googlesubId: sub });
         if (!user && email) {
-            // If no user found by `sub`, check by email and create if necessary
+
             user = await User.findOne({ email });
             if (!user) {
                 // Create a new user
@@ -21,21 +21,20 @@ const findOrCreateUser = async ({ sub, name, email, picture, password }) => {
                     password: password ? await bcrypt.hash(password, 10) : undefined
                 });
                 await user.save();
-                isNewUser = true; // Mark as new user
+                isNewUser = true;
             }
         }
     } else if (email) {
-        // For non-Google sign-in, find by email
         user = await User.findOne({ email });
         if (!user) {
-            // Create a new user if not found by email
+
             user = new User({
                 username: name,
                 email,
                 password: password ? await bcrypt.hash(password, 10) : undefined
             });
             await user.save();
-            isNewUser = true; // Mark as new user
+            isNewUser = true;
         }
     }
     return { user, isNewUser };
@@ -56,35 +55,23 @@ export const loginUser = async (req, res) => {
     const { sub, name, email, password, picture } = req.body;
     try {
         const { user, isNewUser } = await findOrCreateUser({ sub, name, email, picture, password });
-        console.log(user);
 
-        // Directly set authResult for new users
         let authResult;
         if (isNewUser) {
             authResult = { status: 200, user };
         } else {
             authResult = email && password ? await authenticateUser(user, password) : { status: 200, user };
         }
-        console.log(authResult);
 
         if (authResult.status === 400) {
             return res.status(authResult.status).json({ message: authResult.message });
         }
-
-        req.session.user = {
-            id: authResult.user._id,
-            name: authResult.user.username,
-            email: authResult.user.email,
-            picture: authResult.user.picture || ""
-        };
-        req.session.isAuthenticated = true;
-        console.log(req.session);
+        const token = generateToken(authResult.user);
 
         res.status(200).json({
-            message: 'User logged in and session created',
-            user: req.session.user,
-            isAuthenticated: req.session.isAuthenticated,
-            picture: req.session.user.picture
+            message: 'User logged in',
+            user: authResult.user,
+            token
         });
     } catch (error) {
         console.error('Error during login:', error);
@@ -92,19 +79,29 @@ export const loginUser = async (req, res) => {
     }
 };
 
+
+
+
 export const logoutUser = (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).json({ message: 'Failed to log out' });
-        }
-        res.json({ success: true });
-    });
+    res.json({ success: true, message: 'Please discard your token' });
 };
 
+
+
+
 export const checkUser = (req, res) => {
-    if (req.session && req.session.user) {
-        res.json({ loggedIn: true, user: req.session.user, sessionActive: true });
-    } else {
-        res.json({ loggedIn: false, sessionActive: false });
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
     }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Invalid token' });
+        }
+        res.json({
+            loggedIn: true,
+            user: decoded,
+            sessionActive: true
+        });
+    });
 };

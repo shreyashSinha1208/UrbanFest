@@ -1,16 +1,16 @@
-import allCartItem from '../models/allcartItem.js';
+import AllCartItem from '../models/allcartItem.js';
 import CartItem from '../models/cartItem.js';
 import User from '../models/user.js';
 
 export const addCartItem = async (req, res) => {
           try {
-                    const userId = req.session.user.id;
+                    const userId = req.user.id;
 
                     const cartItem = new CartItem(req.body);
                     await cartItem.save();
 
           
-                    const newAllCartItem = new allCartItem({
+                    const newAllCartItem = new AllCartItem({
                               ...req.body,
                               cartItemId: cartItem._id 
                     });
@@ -29,7 +29,7 @@ export const addCartItem = async (req, res) => {
 
 export const deleteCartItem = async (req, res) => {
           try {
-                    const userId = req.session.user.id;
+                    const userId = req.user.id;
                     await CartItem.findByIdAndDelete(req.params.id);
                     await User.findByIdAndUpdate(userId, { $pull: { cartItems: req.params.id } }, { new: true });
                     const cartItems = await User.findById(userId).populate('cartItems');
@@ -41,7 +41,7 @@ export const deleteCartItem = async (req, res) => {
 
 export const getCartItems = async (req, res) => {
           try {
-                    const userId = req.session.user.id;
+                    const userId = req.user.id;
                     const user = await User.findById(userId).populate('cartItems');
                     res.send(user.cartItems);
           } catch (error) {

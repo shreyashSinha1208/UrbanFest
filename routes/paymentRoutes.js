@@ -1,13 +1,13 @@
 import {createOrder, getOrders, updateOrderStatus} from "../controllers/paymentController.js";
 import express from "express";
-import checkUserSession from '../middleware.js';
+import checkToken from '../middleware.js';
 const router = express.Router();
 
 
-router.post('/payment', checkUserSession, createOrder);
+router.post('/payment', checkToken, createOrder);
 
-router.post('/payment/success/:orderId', checkUserSession, updateOrderStatus);
+router.post('/payment/success/:orderId', checkToken, updateOrderStatus);
 
-router.get('/orders' , checkUserSession, getOrders);
+router.get('/orders' , checkToken, getOrders);
       
 export default router;

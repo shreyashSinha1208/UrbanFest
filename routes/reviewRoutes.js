@@ -1,10 +1,10 @@
 import express from 'express';
 import { createReview, deleteReview } from '../controllers/reviewController.js'
-import checkUserSession from '../middleware.js';
+import checkToken from '../middleware.js';
 
 const router = express.Router();
 
-router.post('/createReview', checkUserSession, createReview);
-router.delete('/deleteReview', checkUserSession, deleteReview);
+router.post('/createReview', checkToken, createReview);
+router.delete('/deleteReview', checkToken, deleteReview);
 
 export default router;
