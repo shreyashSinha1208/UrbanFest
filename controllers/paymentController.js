@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import User from '../models/user.js';
 import Order from '../models/order.js';
 import CartItem from '../models/cartItem.js';
-import AllCartItem from '../models/allcartItem.js';
+import AllCartItem from '../models/allCartItem.js';
 import mongoose from 'mongoose';
 dotenv.config();
 
