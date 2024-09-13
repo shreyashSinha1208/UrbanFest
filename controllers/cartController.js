@@ -1,4 +1,4 @@
-import AllCartItem from '../models/allcartItem.js';
+import AllCartItem from '../models/allCartItem.js';
 import CartItem from '../models/cartItem.js';
 import User from '../models/user.js';
 
