@@ -13,18 +13,18 @@ const app = express();
 
 const db_url = process.env.ATLASDB_URL;
 
-// CORS configuration
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: true,
   credentials: true,
 }));
+
 
 // Middleware for parsing JSON requests
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect(db_url, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
+mongoose.connect(db_url)
+  .then(() => console.log(`MongoDB connected with ${db_url}`))
   .catch(err => console.log('MongoDB connection error:', err));
 
 // Route configuration
@@ -38,7 +38,7 @@ app.use(subscriptionRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.log(err);
   res.status(500).send('Something broke!');
 });
 

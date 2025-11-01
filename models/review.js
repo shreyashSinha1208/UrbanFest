@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-// Define the Review schema
 const reviewSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.ObjectId,
@@ -21,6 +20,13 @@ const reviewSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  orderId: {
+    type: String,
+  },
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+  }
 });
 
 // Create the Review model

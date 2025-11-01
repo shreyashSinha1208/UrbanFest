@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
 
-// Define the Order schema
+
 const orderSchema = new mongoose.Schema({
           user: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'User'
           },
           cartItems: [{
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'CartItem'
+                    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+                    quantity: Number,
+                    size: String,
+                    color: String,
+                    reviewId: { type: mongoose.Schema.Types.ObjectId, ref: 'Review' }
           }],
           date: {
                     type: Date,
@@ -25,7 +28,12 @@ const orderSchema = new mongoose.Schema({
           status: {
                     type: Boolean,
                     required: true
+          },
+          paymentMethod: {
+                    type: String,
+                    enum: ['online', 'cod'],
           }
+          
 });
 
 // Create the Order model

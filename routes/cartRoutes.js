@@ -6,7 +6,7 @@ import checkToken from '../middleware.js';
 const router = express.Router();
 
 router.post('/cart', checkToken, addCartItem);
-router.delete('/cart/:id', checkToken, deleteCartItem);
+router.delete('/cart/:cartItemId', checkToken, deleteCartItem);
 router.get('/cart', checkToken, getCartItems);
 
 export default router;

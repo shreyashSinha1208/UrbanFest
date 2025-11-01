@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
           email: {
                     type: String,
                     required: true,
-                    unique: true, // Ensures that each email is unique in the database
+                    unique: true,
           },
           password: {
                     type: String,
@@ -19,18 +19,59 @@ const userSchema = new mongoose.Schema({
                     type: String,
                     required: false
           },
-          cartItems: [{
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'CartItem' // Reference to the CartItem schema
-          }],
-          wishListItems: [{
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'WishList' // Reference to the CartItem schema
-          }],
+          cartItems: [
+                    {
+                              productId: {
+                                        type: mongoose.Schema.Types.ObjectId,
+                                        ref: 'Product',
+                                        required: true,
+                              },
+                              quantity: {
+                                        type: Number,
+                                        default: 1,
+                              },
+                              color: String,
+                              size: String,
+                              addedAt: {
+                                        type: Date,
+                                        default: Date.now,
+                              },
+                    },
+          ],
+          wishListItems: [
+                    {
+                              type: mongoose.Schema.Types.ObjectId,
+                              ref: 'Product'
+                    }
+          ],
+
           picture: {
                     type: String,
                     required: false
+          },
+          addresses: [{
+                    address: String,
+                    label: String,
+                    id: Number,
+                    isDefault: Boolean
+          }],
+          gender: {
+                    type: String,
+                    required: false
+          },
+          contact: {
+                    type: Number,
+                    required: false
+          },
+          cloudinaryId: {
+                    type: String,
+                    required: false
+          },
+          hasSubscription: {
+                    type: Boolean,
+                    default: false
           }
+
 });
 
 const User = mongoose.model('User', userSchema);
